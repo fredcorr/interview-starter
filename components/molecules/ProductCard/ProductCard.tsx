@@ -64,19 +64,7 @@ export const ProductCard = ({
   );
 };
 
-/** Loading placeholder that mirrors ProductCard's layout. */
+/** Loading placeholder matching the card: image, title, brand, rating, price. */
 export const ProductCardSkeleton = ({ className }: { className?: string }) => (
-  <div
-    aria-hidden="true"
-    data-testid="product-card-skeleton"
-    className={cn(CARD_CLASS, className)}
-  >
-    <Skeleton className="aspect-square rounded-none" />
-    <div className="flex flex-col gap-2 p-4">
-      <Skeleton className="h-4 w-4/5" />
-      <Skeleton className="h-3 w-1/3" />
-      <Skeleton className="mt-2 h-4 w-24" />
-      <Skeleton className="mt-4 h-6 w-16" />
-    </div>
-  </div>
+  <Skeleton media="square" lines={4} className={cn(CARD_CLASS, className)} />
 );

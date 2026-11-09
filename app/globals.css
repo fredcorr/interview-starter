@@ -10,6 +10,7 @@
   --surface-muted: #f4f4f5;
   --border: #e4e4e7;
   --ring: #2563eb;
+  --skeleton: #e4e4e7;
   /* Rating stars: filled meets 3:1 non-text contrast on surface. */
   --rating: #b45309;
   --rating-empty: #a1a1aa;
@@ -25,6 +26,7 @@
   --color-surface-muted: var(--surface-muted);
   --color-border: var(--border);
   --color-ring: var(--ring);
+  --color-skeleton: var(--skeleton);
   --color-rating: var(--rating);
   --color-rating-empty: var(--rating-empty);
   --font-sans: var(--font-geist-sans);
@@ -42,6 +44,7 @@
     --surface-muted: #27272a;
     --border: #3f3f46;
     --ring: #60a5fa;
+    --skeleton: #3f3f46;
     --rating: #fbbf24;
     --rating-empty: #71717a;
   }

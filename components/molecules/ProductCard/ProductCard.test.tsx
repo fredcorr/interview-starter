@@ -57,9 +57,10 @@ describe("ProductCard", () => {
     it("renders a placeholder hidden from assistive tech", () => {
       render(<ProductCardSkeleton />);
 
-      expect(screen.getByTestId("product-card-skeleton")).toHaveAttribute(
-        "aria-hidden",
-        "true",
+      const skeleton = screen.getByTestId("skeleton");
+      expect(skeleton).toHaveAttribute("aria-hidden", "true");
+      expect(skeleton.querySelectorAll('[data-skeleton="line"]')).toHaveLength(
+        4,
       );
       expect(screen.queryByRole("article")).not.toBeInTheDocument();
     });
