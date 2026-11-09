@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { StarRating } from "@/components/atoms/StarRating";
+import { Skeleton } from "@/components/atoms/Skeleton";
+import { StarRating } from "@/components/molecules/StarRating";
 import type { Product } from "@/types/product";
 import { cn } from "@/utils/cn";
 import { formatPrice } from "@/utils/format-price";
@@ -10,6 +11,9 @@ export interface ProductCardProps {
   eagerImage?: boolean;
   className?: string;
 }
+
+const CARD_CLASS =
+  "flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface";
 
 export const ProductCard = ({
   product,
@@ -25,7 +29,8 @@ export const ProductCard = ({
       // When a detail route exists, make the title a link and drop tabIndex.
       tabIndex={0}
       className={cn(
-        "flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        CARD_CLASS,
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         className,
       )}
     >
@@ -58,3 +63,20 @@ export const ProductCard = ({
     </article>
   );
 };
+
+/** Loading placeholder that mirrors ProductCard's layout. */
+export const ProductCardSkeleton = ({ className }: { className?: string }) => (
+  <div
+    aria-hidden="true"
+    data-testid="product-card-skeleton"
+    className={cn(CARD_CLASS, className)}
+  >
+    <Skeleton className="aspect-square rounded-none" />
+    <div className="flex flex-col gap-2 p-4">
+      <Skeleton className="h-4 w-4/5" />
+      <Skeleton className="h-3 w-1/3" />
+      <Skeleton className="mt-2 h-4 w-24" />
+      <Skeleton className="mt-4 h-6 w-16" />
+    </div>
+  </div>
+);

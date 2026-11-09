@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { ProductCardSkeleton } from "@/components/molecules/ProductCardSkeleton";
+import { ProductCardSkeleton } from "@/components/molecules/ProductCard";
 import { SearchBar } from "@/components/molecules/SearchBar";
 import { ProductList } from "@/components/organisms/ProductList";
 import {

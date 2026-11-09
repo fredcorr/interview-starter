@@ -4,7 +4,7 @@ import {
   mockProduct,
   mockProductWithoutBrand,
 } from "@/mocks/molecules/product";
-import { ProductCard } from "./ProductCard";
+import { ProductCard, ProductCardSkeleton } from "./ProductCard";
 
 describe("ProductCard", () => {
   it("renders title, brand, price and star rating", () => {
@@ -51,5 +51,17 @@ describe("ProductCard", () => {
 
     await user.tab();
     expect(screen.getByRole("article", { name: "Kiwi" })).toHaveFocus();
+  });
+
+  describe("ProductCardSkeleton", () => {
+    it("renders a placeholder hidden from assistive tech", () => {
+      render(<ProductCardSkeleton />);
+
+      expect(screen.getByTestId("product-card-skeleton")).toHaveAttribute(
+        "aria-hidden",
+        "true",
+      );
+      expect(screen.queryByRole("article")).not.toBeInTheDocument();
+    });
   });
 });

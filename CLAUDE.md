@@ -23,7 +23,7 @@ Run typecheck, lint and test before calling a change done.
 
 ## Structure
 
-- `components/atoms` - smallest building blocks (Button, Input)
+- `components/atoms` - smallest building blocks with no other components inside (Button, Input, Icon, Skeleton)
 - `components/molecules` - small compositions of atoms (FormField, SearchBar)
 - `components/organisms` - larger sections (Header, a full form)
 - `hooks/` - reusable React hooks, kebab-case filenames (`use-debounce.ts`) with a colocated test.
@@ -37,6 +37,7 @@ Run typecheck, lint and test before calling a change done.
 - **Arrow functions everywhere.** Components, hooks, helpers and handlers are `const X = () => ...`. Route files (`page.tsx`, `layout.tsx`, ...) declare a const and `export default` it.
 - **No `any`.** Use precise types, generics, or `unknown` plus narrowing. Infer form types from Yup with `yup.InferType<typeof schema>`.
 - **Tokens, not raw values.** Use theme tokens from `app/globals.css` (`bg-primary`, `text-muted`), not hex codes or arbitrary values like `text-[#333]` / `p-[13px]`. Need a new value? Add a token.
+- **Only extract a component if it will be reused.** One-off variants (e.g. a card's loading skeleton) live in the owning component's file, built from generic atoms.
 - **Reuse before creating.** Check `components/` and `utils/` for something that already fits before adding a new component or helper. Extend with props or `className` (merged through `cn`) rather than copying.
 - **Tests for new components.** Every new component gets a colocated RTL test that covers what it renders and its main interaction. Query by role and accessible name.
 - Validate user input with Yup schemas, kept next to the form that uses them unless shared.

@@ -3,8 +3,10 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/atoms/Button";
-import { ProductCard } from "@/components/molecules/ProductCard";
-import { ProductCardSkeleton } from "@/components/molecules/ProductCardSkeleton";
+import {
+  ProductCard,
+  ProductCardSkeleton,
+} from "@/components/molecules/ProductCard";
 import type { ProductsPage } from "@/types/product";
 import { fetchProducts, PRODUCTS_PAGE_SIZE } from "@/utils/fetch-products";
 import { PRODUCT_GRID_CLASS } from "@/utils/product-grid";
