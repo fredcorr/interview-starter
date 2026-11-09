@@ -6,6 +6,13 @@
   --muted: #71717a;
   --primary: #171717;
   --primary-foreground: #fafafa;
+  --surface: #ffffff;
+  --surface-muted: #f4f4f5;
+  --border: #e4e4e7;
+  --ring: #2563eb;
+  /* Rating stars: filled meets 3:1 non-text contrast on surface. */
+  --rating: #b45309;
+  --rating-empty: #a1a1aa;
 }
 
 @theme inline {
@@ -14,6 +21,12 @@
   --color-muted: var(--muted);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-rating: var(--rating);
+  --color-rating-empty: var(--rating-empty);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -25,6 +38,12 @@
     --muted: #a1a1aa;
     --primary: #ededed;
     --primary-foreground: #0a0a0a;
+    --surface: #18181b;
+    --surface-muted: #27272a;
+    --border: #3f3f46;
+    --ring: #60a5fa;
+    --rating: #fbbf24;
+    --rating-empty: #71717a;
   }
 }
 
