@@ -19,19 +19,18 @@ export const mockProductWithoutBrand: Product = {
   rating: 3.2,
 };
 
-export function makeProducts(count: number, startId = 1): Product[] {
-  return Array.from({ length: count }, (_, index) => ({
+export const makeProducts = (count: number, startId = 1): Product[] =>
+  Array.from({ length: count }, (_, index) => ({
     ...mockProduct,
     id: startId + index,
     title: `Product ${startId + index}`,
   }));
-}
 
-export function makeProductsPage(
+export const makeProductsPage = (
   skip: number,
   limit: number,
   total: number,
-): ProductsPage {
+): ProductsPage => {
   const count = Math.max(Math.min(limit, total - skip), 0);
   return { products: makeProducts(count, skip + 1), total, skip, limit };
-}
+};

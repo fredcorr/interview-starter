@@ -1,12 +1,12 @@
 import { fetchProducts } from "./fetch-products";
 
-function mockFetchResponse(body: unknown, ok = true, status = 200) {
+const mockFetchResponse = (body: unknown, ok = true, status = 200) => {
   global.fetch = jest.fn().mockResolvedValue({
     ok,
     status,
     json: async () => body,
   });
-}
+};
 
 describe("fetchProducts", () => {
   it("requests a page with limit, skip and the card fields", async () => {

@@ -1,13 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import {
-  useCallback,
-  useEffect,
-  useEffectEvent,
-  useState,
-  useTransition,
-} from "react";
+import { useCallback, useEffect, useEffectEvent, useState } from "react";
 import { SearchBar } from "@/components/molecules/SearchBar";
 import { useDebounce } from "@/hooks/use-debounce";
 import { parseSearchQuery, SEARCH_PARAM } from "@/utils/search-query";
@@ -16,9 +10,9 @@ export const PRODUCT_SEARCH_LABEL = "Search products";
 
 /**
  * Controlled search box that writes a debounced `?q=` to the URL. The page
- * reads `q` on the server, so results come from the cached ProductList.
+ * reads `q` on the server, so results come from the cached product data.
  */
-export function ProductSearch() {
+export const ProductSearch = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -26,7 +20,6 @@ export function ProductSearch() {
 
   const [value, setValue] = useState(urlQuery);
   const debouncedValue = useDebounce(value);
-  const [isPending, startTransition] = useTransition();
 
   const commit = useCallback(
     (nextValue: string) => {
@@ -38,10 +31,8 @@ export function ProductSearch() {
       else params.delete(SEARCH_PARAM);
       const search = params.toString();
 
-      startTransition(() => {
-        router.replace(search ? `${pathname}?${search}` : pathname, {
-          scroll: false,
-        });
+      router.replace(search ? `${pathname}?${search}` : pathname, {
+        scroll: false,
       });
     },
     [pathname, router, searchParams, urlQuery],
@@ -60,7 +51,6 @@ export function ProductSearch() {
       value={value}
       onValueChange={setValue}
       onSubmit={commit}
-      pending={isPending}
     />
   );
-}
+};

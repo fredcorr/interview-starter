@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 export const DEFAULT_DEBOUNCE_MS = 300;
 
 /** Returns `value` once it has stopped changing for `delay` ms. */
-export function useDebounce<T>(value: T, delay = DEFAULT_DEBOUNCE_MS): T {
+export const useDebounce = <T>(value: T, delay = DEFAULT_DEBOUNCE_MS): T => {
   const [debounced, setDebounced] = useState(value);
 
   useEffect(() => {
@@ -12,4 +12,4 @@ export function useDebounce<T>(value: T, delay = DEFAULT_DEBOUNCE_MS): T {
   }, [value, delay]);
 
   return debounced;
-}
+};

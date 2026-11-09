@@ -1,9 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { makeProductsPage } from "@/mocks/molecules/product";
 import { fetchProducts } from "@/utils/fetch-products";
-import { LoadMoreProductList } from "./LoadMoreProductList";
+import { ProductList } from "./ProductList";
 
 jest.mock("@/utils/fetch-products", () => ({
   ...jest.requireActual("@/utils/fetch-products"),
@@ -11,40 +11,35 @@ jest.mock("@/utils/fetch-products", () => ({
 }));
 
 const mockFetchProducts = jest.mocked(fetchProducts);
+const TOTAL = 45;
 
-function renderList({ initialCount = 20, total = 45, query = "" } = {}) {
+const renderList = ({ query = "", total = TOTAL } = {}) => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
   return render(
     <QueryClientProvider client={queryClient}>
-      <LoadMoreProductList
-        query={query}
-        initialCount={initialCount}
-        total={total}
-      >
-        {Array.from({ length: initialCount }, (_, index) => (
-          <li key={index}>
-            <article aria-label={`Server product ${index + 1}`} />
-          </li>
-        ))}
-      </LoadMoreProductList>
+      <ProductList query={query} initialPage={makeProductsPage(0, 20, total)} />
     </QueryClientProvider>,
   );
-}
+};
 
-describe("LoadMoreProductList", () => {
+const loadMoreButton = () =>
+  screen.getByRole("button", { name: "Load more products" });
+
+describe("ProductList", () => {
   beforeEach(() => {
     mockFetchProducts.mockReset();
-    mockFetchProducts.mockImplementation(async ({ skip = 0, limit = 20 } = {}) =>
-      makeProductsPage(skip, limit, 45),
+    mockFetchProducts.mockImplementation(
+      async ({ skip = 0, limit = 20 } = {}) =>
+        makeProductsPage(skip, limit, TOTAL),
     );
   });
 
-  it("renders the server items without fetching on mount", () => {
+  it("renders the first page without fetching on mount", () => {
     renderList();
 
-    expect(screen.getAllByRole("listitem")).toHaveLength(20);
+    expect(screen.getAllByRole("article")).toHaveLength(20);
     expect(screen.getByRole("status")).toHaveTextContent(
       "Showing 20 of 45 products",
     );
@@ -55,34 +50,30 @@ describe("LoadMoreProductList", () => {
     const user = userEvent.setup();
     renderList();
 
-    await user.click(screen.getByRole("button", { name: "Load more products" }));
+    await user.click(loadMoreButton());
 
     expect(
       await screen.findByRole("article", { name: "Product 21" }),
-    ).toBeInTheDocument();
+    ).toHaveFocus();
     expect(mockFetchProducts).toHaveBeenCalledWith(
       expect.objectContaining({ skip: 20, limit: 20 }),
     );
     expect(screen.getAllByRole("article")).toHaveLength(40);
-    expect(
-      screen.getByRole("article", { name: "Product 21" }),
-    ).toHaveFocus();
     expect(screen.getByRole("status")).toHaveTextContent(
       "Showing 40 of 45 products",
     );
   });
 
-  it("hides the button once every product is loaded", async () => {
+  it("only renders the load more button while products remain", async () => {
     const user = userEvent.setup();
     renderList();
 
-    await user.click(screen.getByRole("button", { name: "Load more products" }));
+    await user.click(loadMoreButton());
     await screen.findByRole("article", { name: "Product 21" });
-    await user.click(screen.getByRole("button", { name: "Load more products" }));
+    await user.click(loadMoreButton());
     await screen.findByRole("article", { name: "Product 45" });
 
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
-    expect(screen.getByText("You've seen all products.")).toBeInTheDocument();
   });
 
   it("shows an error and lets the user retry", async () => {
@@ -90,7 +81,7 @@ describe("LoadMoreProductList", () => {
     mockFetchProducts.mockRejectedValueOnce(new Error("Network down"));
     renderList();
 
-    await user.click(screen.getByRole("button", { name: "Load more products" }));
+    await user.click(loadMoreButton());
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "We couldn't load more products",
@@ -98,9 +89,8 @@ describe("LoadMoreProductList", () => {
 
     await user.click(screen.getByRole("button", { name: "Try again" }));
 
-    const list = screen.getByRole("list");
     expect(
-      await within(list).findByRole("article", { name: "Product 21" }),
+      await screen.findByRole("article", { name: "Product 21" }),
     ).toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
@@ -113,7 +103,7 @@ describe("LoadMoreProductList", () => {
       "Showing 20 of 45 results for “phone”",
     );
 
-    await user.click(screen.getByRole("button", { name: "Load more products" }));
+    await user.click(loadMoreButton());
     await screen.findByRole("article", { name: "Product 21" });
 
     expect(mockFetchProducts).toHaveBeenCalledWith(
@@ -122,7 +112,7 @@ describe("LoadMoreProductList", () => {
   });
 
   it("announces when a search has no results", () => {
-    renderList({ query: "zzz", initialCount: 0, total: 0 });
+    renderList({ query: "zzz", total: 0 });
 
     expect(screen.getByRole("status")).toHaveTextContent(
       "No products found for “zzz”.",

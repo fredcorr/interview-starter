@@ -17,15 +17,15 @@ export const metadata: Metadata = {
   title: "Interview starter",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
-  return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col font-sans">
-        <Providers>{children}</Providers>
-      </body>
-    </html>
-  );
-}
+const RootLayout = ({ children }: LayoutProps<"/">) => (
+  <html
+    lang="en"
+    className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+  >
+    <body className="min-h-full flex flex-col font-sans">
+      <Providers>{children}</Providers>
+    </body>
+  </html>
+);
+
+export default RootLayout;

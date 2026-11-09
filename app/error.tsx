@@ -3,13 +3,12 @@
 import { useEffect } from "react";
 import { Button } from "@/components/atoms/Button";
 
-export default function Error({
-  error,
-  retry,
-}: {
+interface ErrorPageProps {
   error: unknown;
   retry: () => void;
-}) {
+}
+
+const ErrorPage = ({ error, retry }: ErrorPageProps) => {
   useEffect(() => {
     console.error(error);
   }, [error]);
@@ -21,4 +20,6 @@ export default function Error({
       <Button onClick={() => retry()}>Try again</Button>
     </main>
   );
-}
+};
+
+export default ErrorPage;

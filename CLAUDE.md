@@ -34,6 +34,7 @@ Run typecheck, lint and test before calling a change done.
 
 ## Rules
 
+- **Arrow functions everywhere.** Components, hooks, helpers and handlers are `const X = () => ...`. Route files (`page.tsx`, `layout.tsx`, ...) declare a const and `export default` it.
 - **No `any`.** Use precise types, generics, or `unknown` plus narrowing. Infer form types from Yup with `yup.InferType<typeof schema>`.
 - **Tokens, not raw values.** Use theme tokens from `app/globals.css` (`bg-primary`, `text-muted`), not hex codes or arbitrary values like `text-[#333]` / `p-[13px]`. Need a new value? Add a token.
 - **Reuse before creating.** Check `components/` and `utils/` for something that already fits before adding a new component or helper. Extend with props or `className` (merged through `cn`) rather than copying.

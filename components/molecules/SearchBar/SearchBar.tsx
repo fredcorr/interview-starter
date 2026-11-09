@@ -1,6 +1,8 @@
 "use client";
 
-import { useId, type FormEvent } from "react";
+import { useId, useRef, type FormEvent } from "react";
+import { Button } from "@/components/atoms/Button";
+import { Icon } from "@/components/atoms/Icon";
 import { Input } from "@/components/atoms/Input";
 import { cn } from "@/utils/cn";
 import { MAX_SEARCH_LENGTH } from "@/utils/search-query";
@@ -8,32 +10,37 @@ import { MAX_SEARCH_LENGTH } from "@/utils/search-query";
 export interface SearchBarProps {
   value: string;
   onValueChange?: (value: string) => void;
-  /** Called on Enter, so users don't have to wait for the debounce. */
+  /** Called on Enter and on clear, so users don't wait for any debounce. */
   onSubmit?: (value: string) => void;
   label?: string;
   placeholder?: string;
-  /** Shows a "Searching…" hint while results update. */
-  pending?: boolean;
   disabled?: boolean;
   className?: string;
 }
 
-export function SearchBar({
+export const SearchBar = ({
   value,
   onValueChange,
   onSubmit,
   label = "Search",
   placeholder,
-  pending = false,
   disabled = false,
   className,
-}: SearchBarProps) {
+}: SearchBarProps) => {
   const inputId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit?.(value);
-  }
+  };
+
+  const handleClear = () => {
+    onValueChange?.("");
+    onSubmit?.("");
+    // The clear button unmounts once empty; keep focus in the field.
+    inputRef.current?.focus();
+  };
 
   return (
     <form
@@ -45,16 +52,12 @@ export function SearchBar({
         {label}
       </label>
       <div className="relative">
-        <svg
-          viewBox="0 0 20 20"
-          aria-hidden="true"
-          focusable="false"
-          className="pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2 fill-none stroke-muted stroke-2"
-        >
-          <circle cx="9" cy="9" r="6" />
-          <path d="m13.5 13.5 4 4" strokeLinecap="round" />
-        </svg>
+        <Icon
+          name="search"
+          className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted"
+        />
         <Input
+          ref={inputRef}
           id={inputId}
           type="search"
           value={value}
@@ -63,12 +66,20 @@ export function SearchBar({
           maxLength={MAX_SEARCH_LENGTH}
           autoComplete="off"
           disabled={disabled}
-          className="pl-10"
+          className="px-10"
         />
+        {value && !disabled && (
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={`Clear ${label.toLowerCase()}`}
+            onClick={handleClear}
+            className="absolute top-0 right-0"
+          >
+            <Icon name="close" />
+          </Button>
+        )}
       </div>
-      <p className={cn("min-h-5 text-sm text-muted", !pending && "invisible")}>
-        Searching…
-      </p>
     </form>
   );
-}
+};

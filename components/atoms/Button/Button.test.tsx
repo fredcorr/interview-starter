@@ -34,4 +34,13 @@ describe("Button", () => {
     expect(button).toHaveAttribute("aria-busy", "true");
     expect(button).toHaveAttribute("aria-disabled", "true");
   });
+
+  it("supports an icon-only ghost variant", () => {
+    render(<Button variant="ghost" size="icon" aria-label="Clear search" />);
+
+    expect(screen.getByRole("button", { name: "Clear search" })).toHaveClass(
+      "size-11",
+      "text-muted",
+    );
+  });
 });

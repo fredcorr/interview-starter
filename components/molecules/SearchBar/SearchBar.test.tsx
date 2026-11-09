@@ -3,7 +3,11 @@ import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { SearchBar } from "./SearchBar";
 
-function ControlledSearchBar({ onSubmit }: { onSubmit?: (v: string) => void }) {
+const ControlledSearchBar = ({
+  onSubmit,
+}: {
+  onSubmit?: (value: string) => void;
+}) => {
   const [value, setValue] = useState("");
   return (
     <SearchBar
@@ -13,7 +17,7 @@ function ControlledSearchBar({ onSubmit }: { onSubmit?: (v: string) => void }) {
       onSubmit={onSubmit}
     />
   );
-}
+};
 
 describe("SearchBar", () => {
   it("renders a labelled search box inside a search landmark", () => {
@@ -36,11 +40,34 @@ describe("SearchBar", () => {
     expect(onSubmit).toHaveBeenCalledWith("phone");
   });
 
-  it("only shows the pending hint while pending", () => {
-    const { rerender } = render(<SearchBar value="" />);
-    expect(screen.getByText("Searching…")).toHaveClass("invisible");
+  it("only shows the clear button when there is text", async () => {
+    render(<ControlledSearchBar />);
 
-    rerender(<SearchBar value="" pending />);
-    expect(screen.getByText("Searching…")).not.toHaveClass("invisible");
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+
+    await userEvent.type(screen.getByRole("searchbox"), "phone");
+
+    expect(
+      screen.getByRole("button", { name: "Clear search products" }),
+    ).toBeInTheDocument();
+  });
+
+  it("clears with the keyboard and returns focus to the field", async () => {
+    const user = userEvent.setup();
+    const onSubmit = jest.fn();
+    render(<ControlledSearchBar onSubmit={onSubmit} />);
+
+    const input = screen.getByRole("searchbox", { name: "Search products" });
+    await user.type(input, "phone");
+    await user.tab();
+    expect(
+      screen.getByRole("button", { name: "Clear search products" }),
+    ).toHaveFocus();
+
+    await user.keyboard("{Enter}");
+
+    expect(input).toHaveValue("");
+    expect(input).toHaveFocus();
+    expect(onSubmit).toHaveBeenLastCalledWith("");
   });
 });

@@ -31,9 +31,7 @@ describe("ProductCard", () => {
   it("omits the brand line when there is no brand", () => {
     render(<ProductCard product={mockProductWithoutBrand} />);
 
-    expect(
-      screen.getByRole("heading", { name: "Kiwi" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Kiwi" })).toBeInTheDocument();
     expect(screen.getByRole("article").querySelectorAll("p")).toHaveLength(1);
   });
 

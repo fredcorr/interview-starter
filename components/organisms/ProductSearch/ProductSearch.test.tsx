@@ -13,7 +13,7 @@ jest.mock("next/navigation", () => ({
   useSearchParams: () => mockSearchParams,
 }));
 
-function setup(search = "") {
+const setup = (search = "") => {
   mockSearchParams = new URLSearchParams(search);
   const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
   render(<ProductSearch />);
@@ -21,7 +21,7 @@ function setup(search = "") {
     user,
     input: screen.getByRole("searchbox", { name: "Search products" }),
   };
-}
+};
 
 describe("ProductSearch", () => {
   beforeEach(() => {
@@ -61,6 +61,16 @@ describe("ProductSearch", () => {
 
     await user.clear(input);
     act(() => jest.advanceTimersByTime(300));
+
+    expect(mockReplace).toHaveBeenCalledWith("/", { scroll: false });
+  });
+
+  it("removes q immediately via the clear button", async () => {
+    const { user } = setup("q=phone");
+
+    await user.click(
+      screen.getByRole("button", { name: "Clear search products" }),
+    );
 
     expect(mockReplace).toHaveBeenCalledWith("/", { scroll: false });
   });

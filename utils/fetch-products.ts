@@ -34,12 +34,12 @@ export interface FetchProductsParams {
  * Fetches one page of products, optionally filtered by a search query. Shared by the cached server render
  * (first page) and the client-side "Load more" query.
  */
-export async function fetchProducts({
+export const fetchProducts = async ({
   query = "",
   skip = 0,
   limit = PRODUCTS_PAGE_SIZE,
   signal,
-}: FetchProductsParams = {}): Promise<ProductsPage> {
+}: FetchProductsParams = {}): Promise<ProductsPage> => {
   const params = new URLSearchParams({
     ...(query && { q: query }),
     limit: String(limit),
@@ -55,4 +55,4 @@ export async function fetchProducts({
 
   const body: unknown = await response.json();
   return productsPageSchema.validate(body, { stripUnknown: true });
-}
+};

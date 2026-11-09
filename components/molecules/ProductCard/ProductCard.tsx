@@ -11,11 +11,11 @@ export interface ProductCardProps {
   className?: string;
 }
 
-export function ProductCard({
+export const ProductCard = ({
   product,
   eagerImage = false,
   className,
-}: ProductCardProps) {
+}: ProductCardProps) => {
   const titleId = `product-${product.id}-title`;
 
   return (
@@ -49,9 +49,7 @@ export function ProductCard({
         >
           {product.title}
         </h2>
-        {product.brand && (
-          <p className="text-sm text-muted">{product.brand}</p>
-        )}
+        {product.brand && <p className="text-sm text-muted">{product.brand}</p>}
         <StarRating rating={product.rating} className="mt-2" />
         <p className="mt-auto pt-4 text-xl font-bold tracking-tight text-foreground tabular-nums">
           {formatPrice(product.price)}
@@ -59,4 +57,4 @@ export function ProductCard({
       </div>
     </article>
   );
-}
+};
