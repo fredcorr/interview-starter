@@ -7,6 +7,10 @@ import { formatPrice } from "@/utils/format-price";
 
 export interface ProductCardProps {
   product: Product;
+  /** Called when the card is clicked or its title button is activated. */
+  onSelect: (product: Product) => void;
+  /** What selecting the card does, e.g. "Request a quote". Shown and announced. */
+  actionLabel?: string;
   /** Load the thumbnail eagerly; use for above-the-fold cards. */
   eagerImage?: boolean;
   className?: string;
@@ -17,20 +21,22 @@ const CARD_CLASS =
 
 export const ProductCard = ({
   product,
+  onSelect,
+  actionLabel,
   eagerImage = false,
   className,
 }: ProductCardProps) => {
   const titleId = `product-${product.id}-title`;
+  const actionId = `product-${product.id}-action`;
 
   return (
     <article
       aria-labelledby={titleId}
-      // No product detail page yet, so the card itself is the keyboard stop.
-      // When a detail route exists, make the title a link and drop tabIndex.
-      tabIndex={0}
+      // The title button is stretched over the card: the whole card is
+      // clickable, but there's one keyboard stop, named by the title.
       className={cn(
         CARD_CLASS,
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        "relative transition-shadow hover:shadow-md has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ring",
         className,
       )}
     >
@@ -52,13 +58,28 @@ export const ProductCard = ({
           id={titleId}
           className="line-clamp-2 text-base leading-snug font-semibold text-foreground"
         >
-          {product.title}
+          <button
+            type="button"
+            onClick={() => onSelect(product)}
+            aria-describedby={actionLabel ? actionId : undefined}
+            className="text-left after:absolute after:inset-0 focus-visible:outline-none"
+          >
+            {product.title}
+          </button>
         </h2>
         {product.brand && <p className="text-sm text-muted">{product.brand}</p>}
         <StarRating rating={product.rating} className="mt-2" />
         <p className="mt-auto pt-4 text-xl font-bold tracking-tight text-foreground tabular-nums">
           {formatPrice(product.price)}
         </p>
+        {actionLabel && (
+          <p
+            id={actionId}
+            className="text-sm font-medium text-foreground underline underline-offset-4"
+          >
+            {actionLabel}
+          </p>
+        )}
       </div>
     </article>
   );

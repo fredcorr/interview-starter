@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 :root {
+  /* Lets native controls (date picker, select) follow the theme. */
+  color-scheme: light dark;
   --background: #ffffff;
   --foreground: #171717;
   --muted: #71717a;
@@ -14,6 +16,12 @@
   /* Rating stars: filled meets 3:1 non-text contrast on surface. */
   --rating: #b45309;
   --rating-empty: #a1a1aa;
+  /* Status colours: text meets 4.5:1 on surface and on its own *-surface. */
+  --danger: #b91c1c;
+  --danger-surface: #fef2f2;
+  --success: #15803d;
+  --success-surface: #f0fdf4;
+  --overlay: rgb(0 0 0 / 0.5);
 }
 
 @theme inline {
@@ -29,6 +37,11 @@
   --color-skeleton: var(--skeleton);
   --color-rating: var(--rating);
   --color-rating-empty: var(--rating-empty);
+  --color-danger: var(--danger);
+  --color-danger-surface: var(--danger-surface);
+  --color-success: var(--success);
+  --color-success-surface: var(--success-surface);
+  --color-overlay: var(--overlay);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -47,6 +60,11 @@
     --skeleton: #3f3f46;
     --rating: #fbbf24;
     --rating-empty: #71717a;
+    --danger: #f87171;
+    --danger-surface: #2a1215;
+    --success: #4ade80;
+    --success-surface: #0f2a1a;
+    --overlay: rgb(0 0 0 / 0.7);
   }
 }
 
@@ -58,4 +76,9 @@ body {
 /* The native clear "x" isn't keyboard focusable; SearchBar renders its own. */
 input[type="search"]::-webkit-search-cancel-button {
   appearance: none;
+}
+
+/* Page behind an open modal dialog doesn't scroll. */
+body:has(dialog[open]) {
+  overflow: hidden;
 }

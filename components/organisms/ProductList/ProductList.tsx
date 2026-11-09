@@ -1,15 +1,22 @@
 "use client";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { submitFormAction } from "@/app/actions/submit-form";
 import { Button } from "@/components/atoms/Button";
+import { withModal } from "@/components/hocs/withModal";
 import {
   ProductCard,
   ProductCardSkeleton,
 } from "@/components/molecules/ProductCard";
-import type { ProductsPage } from "@/types/product";
+import { Form } from "@/components/organisms/Form";
+import { quoteFields } from "@/lib/forms/quote";
+import type { Product, ProductsPage } from "@/types/product";
 import { fetchProducts, PRODUCTS_PAGE_SIZE } from "@/utils/fetch-products";
 import { PRODUCT_GRID_CLASS } from "@/utils/product-grid";
+
+const QuoteModal = withModal(Form<typeof quoteFields>);
+const submitQuote = submitFormAction.bind(null, "quote");
 
 /** Cards in the first row get eager, high-priority thumbnails (LCP). */
 const EAGER_IMAGE_COUNT = 4;
@@ -35,6 +42,8 @@ const resultsSummary = (query: string, shown: number, total: number) => {
 export const ProductList = ({ initialPage, query = "" }: ProductListProps) => {
   const listRef = useRef<HTMLUListElement>(null);
   const pendingFocusIndex = useRef<number | null>(null);
+  const [quoteProduct, setQuoteProduct] = useState<Product | null>(null);
+  const closeQuote = useCallback(() => setQuoteProduct(null), []);
 
   const {
     data,
@@ -72,7 +81,7 @@ export const ProductList = ({ initialPage, query = "" }: ProductListProps) => {
     if (index === null || index >= products.length) return;
     pendingFocusIndex.current = null;
     listRef.current
-      ?.querySelector<HTMLElement>(`[data-index="${index}"] article`)
+      ?.querySelector<HTMLElement>(`[data-index="${index}"] article button`)
       ?.focus();
   }, [products.length]);
 
@@ -91,6 +100,8 @@ export const ProductList = ({ initialPage, query = "" }: ProductListProps) => {
             <li key={product.id} data-index={index}>
               <ProductCard
                 product={product}
+                onSelect={setQuoteProduct}
+                actionLabel="Request a quote"
                 eagerImage={index < EAGER_IMAGE_COUNT}
               />
             </li>
@@ -126,6 +137,27 @@ export const ProductList = ({ initialPage, query = "" }: ProductListProps) => {
           </Button>
         )}
       </div>
+
+      {quoteProduct && (
+        <QuoteModal
+          open
+          onClose={closeQuote}
+          title="Request a quote"
+          description={quoteProduct.title}
+          id="quote"
+          label={`Request a quote for ${quoteProduct.title}`}
+          fields={quoteFields}
+          action={submitQuote}
+          hiddenValues={{ productId: String(quoteProduct.id) }}
+          copy={{
+            submit: "Request quote",
+            successTitle: "Quote request sent",
+            successMessage: ({ email }) =>
+              `Your quote request for ${quoteProduct.title} has been sent. We'll reply to ${email} within 2 working days.`,
+            errorTitle: "Quote request not sent",
+          }}
+        />
+      )}
     </section>
   );
 };

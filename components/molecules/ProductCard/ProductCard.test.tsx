@@ -8,7 +8,7 @@ import { ProductCard, ProductCardSkeleton } from "./ProductCard";
 
 describe("ProductCard", () => {
   it("renders title, brand, price and star rating", () => {
-    render(<ProductCard product={mockProduct} />);
+    render(<ProductCard product={mockProduct} onSelect={jest.fn()} />);
 
     const card = screen.getByRole("article", { name: mockProduct.title });
     expect(card).toBeInTheDocument();
@@ -23,34 +23,63 @@ describe("ProductCard", () => {
   });
 
   it("treats the thumbnail as decorative", () => {
-    const { container } = render(<ProductCard product={mockProduct} />);
+    const { container } = render(<ProductCard product={mockProduct} onSelect={jest.fn()} />);
 
     expect(container.querySelector("img")).toHaveAttribute("alt", "");
   });
 
   it("omits the brand line when there is no brand", () => {
-    render(<ProductCard product={mockProductWithoutBrand} />);
+    render(
+      <ProductCard product={mockProductWithoutBrand} onSelect={jest.fn()} />,
+    );
 
     expect(screen.getByRole("heading", { name: "Kiwi" })).toBeInTheDocument();
     expect(screen.getByRole("article").querySelectorAll("p")).toHaveLength(1);
   });
 
-  it("is reachable with the keyboard", async () => {
+  it("is one keyboard stop, a button named by the product title", async () => {
     const user = userEvent.setup();
     render(
       <>
-        <ProductCard product={mockProduct} />
-        <ProductCard product={mockProductWithoutBrand} />
+        <ProductCard product={mockProduct} onSelect={jest.fn()} />
+        <ProductCard product={mockProductWithoutBrand} onSelect={jest.fn()} />
       </>,
     );
 
     await user.tab();
     expect(
-      screen.getByRole("article", { name: mockProduct.title }),
+      screen.getByRole("button", { name: mockProduct.title }),
     ).toHaveFocus();
 
     await user.tab();
-    expect(screen.getByRole("article", { name: "Kiwi" })).toHaveFocus();
+    expect(screen.getByRole("button", { name: "Kiwi" })).toHaveFocus();
+  });
+
+  it("selects the product when the card is clicked or activated", async () => {
+    const user = userEvent.setup();
+    const onSelect = jest.fn();
+    render(<ProductCard product={mockProduct} onSelect={onSelect} />);
+
+    await user.click(screen.getByRole("button", { name: mockProduct.title }));
+    screen.getByRole("button").focus();
+    await user.keyboard("{Enter}");
+
+    expect(onSelect).toHaveBeenCalledTimes(2);
+    expect(onSelect).toHaveBeenCalledWith(mockProduct);
+  });
+
+  it("shows and describes the card's action when given one", () => {
+    render(
+      <ProductCard
+        product={mockProduct}
+        onSelect={jest.fn()}
+        actionLabel="Request a quote"
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: mockProduct.title }),
+    ).toHaveAccessibleDescription("Request a quote");
   });
 
   describe("ProductCardSkeleton", () => {
