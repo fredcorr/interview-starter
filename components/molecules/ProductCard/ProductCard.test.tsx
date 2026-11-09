@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import {
   mockProduct,
   mockProductWithoutBrand,
@@ -34,5 +35,23 @@ describe("ProductCard", () => {
       screen.getByRole("heading", { name: "Kiwi" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("article").querySelectorAll("p")).toHaveLength(1);
+  });
+
+  it("is reachable with the keyboard", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <ProductCard product={mockProduct} />
+        <ProductCard product={mockProductWithoutBrand} />
+      </>,
+    );
+
+    await user.tab();
+    expect(
+      screen.getByRole("article", { name: mockProduct.title }),
+    ).toHaveFocus();
+
+    await user.tab();
+    expect(screen.getByRole("article", { name: "Kiwi" })).toHaveFocus();
   });
 });

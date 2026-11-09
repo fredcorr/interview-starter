@@ -23,27 +23,32 @@ const productsPageSchema: yup.ObjectSchema<ProductsPage> = yup.object({
 });
 
 export interface FetchProductsParams {
+  /** Free-text search; empty means the full catalogue. */
+  query?: string;
   skip?: number;
   limit?: number;
   signal?: AbortSignal;
 }
 
 /**
- * Fetches one page of products. Shared by the cached server render
+ * Fetches one page of products, optionally filtered by a search query. Shared by the cached server render
  * (first page) and the client-side "Load more" query.
  */
 export async function fetchProducts({
+  query = "",
   skip = 0,
   limit = PRODUCTS_PAGE_SIZE,
   signal,
 }: FetchProductsParams = {}): Promise<ProductsPage> {
   const params = new URLSearchParams({
+    ...(query && { q: query }),
     limit: String(limit),
     skip: String(skip),
     select: PRODUCT_FIELDS.join(","),
   });
 
-  const response = await fetch(`${PRODUCTS_URL}?${params}`, { signal });
+  const endpoint = query ? `${PRODUCTS_URL}/search` : PRODUCTS_URL;
+  const response = await fetch(`${endpoint}?${params}`, { signal });
   if (!response.ok) {
     throw new Error(`Failed to load products (HTTP ${response.status})`);
   }

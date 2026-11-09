@@ -22,6 +22,16 @@ describe("fetchProducts", () => {
     );
   });
 
+  it("uses the search endpoint with q when a query is given", async () => {
+    mockFetchResponse({ products: [], total: 0, skip: 0, limit: 0 });
+
+    await fetchProducts({ query: "phone" });
+
+    const url = new URL(jest.mocked(global.fetch).mock.calls[0][0] as string);
+    expect(url.pathname).toBe("/products/search");
+    expect(url.searchParams.get("q")).toBe("phone");
+  });
+
   it("returns validated products and strips unknown fields", async () => {
     mockFetchResponse({
       products: [

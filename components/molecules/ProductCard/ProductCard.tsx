@@ -21,8 +21,11 @@ export function ProductCard({
   return (
     <article
       aria-labelledby={titleId}
+      // No product detail page yet, so the card itself is the keyboard stop.
+      // When a detail route exists, make the title a link and drop tabIndex.
+      tabIndex={0}
       className={cn(
-        "flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface",
+        "flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         className,
       )}
     >

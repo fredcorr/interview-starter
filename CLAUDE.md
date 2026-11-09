@@ -26,10 +26,11 @@ Run typecheck, lint and test before calling a change done.
 - `components/atoms` - smallest building blocks (Button, Input)
 - `components/molecules` - small compositions of atoms (FormField, SearchBar)
 - `components/organisms` - larger sections (Header, a full form)
+- `hooks/` - reusable React hooks, kebab-case filenames (`use-debounce.ts`) with a colocated test.
 - `utils/` - helpers, kebab-case filenames (`format-date.ts`). `cn()` in `utils/cn.ts` merges classes.
 - `types/` - shared interfaces used in more than one place. Component-only props stay with the component.
 - `mocks/{atoms,molecules,organisms}` - mock data, mirroring the component level it serves.
-- Tests sit next to the component: `Button.tsx` + `Button.test.tsx`.
+- Every component gets its own folder with its test and an `index.ts` barrel: `components/atoms/Button/{Button.tsx, Button.test.tsx, index.ts}`. Import via the folder: `@/components/atoms/Button`.
 
 ## Rules
 

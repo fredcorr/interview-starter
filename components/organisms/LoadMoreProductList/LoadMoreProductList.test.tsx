@@ -12,13 +12,17 @@ jest.mock("@/utils/fetch-products", () => ({
 
 const mockFetchProducts = jest.mocked(fetchProducts);
 
-function renderList({ initialCount = 20, total = 45 } = {}) {
+function renderList({ initialCount = 20, total = 45, query = "" } = {}) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
   return render(
     <QueryClientProvider client={queryClient}>
-      <LoadMoreProductList initialCount={initialCount} total={total}>
+      <LoadMoreProductList
+        query={query}
+        initialCount={initialCount}
+        total={total}
+      >
         {Array.from({ length: initialCount }, (_, index) => (
           <li key={index}>
             <article aria-label={`Server product ${index + 1}`} />
@@ -41,7 +45,9 @@ describe("LoadMoreProductList", () => {
     renderList();
 
     expect(screen.getAllByRole("listitem")).toHaveLength(20);
-    expect(screen.getByText("Showing 20 of 45 products")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Showing 20 of 45 products",
+    );
     expect(mockFetchProducts).not.toHaveBeenCalled();
   });
 
@@ -59,10 +65,10 @@ describe("LoadMoreProductList", () => {
     );
     expect(screen.getAllByRole("article")).toHaveLength(40);
     expect(
-      screen.getByRole("article", { name: "Product 21" }).closest("li"),
+      screen.getByRole("article", { name: "Product 21" }),
     ).toHaveFocus();
     expect(screen.getByRole("status")).toHaveTextContent(
-      "Loaded 20 more products. Showing 40 of 45.",
+      "Showing 40 of 45 products",
     );
   });
 
@@ -97,5 +103,31 @@ describe("LoadMoreProductList", () => {
       await within(list).findByRole("article", { name: "Product 21" }),
     ).toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("fetches further pages with the active search query", async () => {
+    const user = userEvent.setup();
+    renderList({ query: "phone" });
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Showing 20 of 45 results for “phone”",
+    );
+
+    await user.click(screen.getByRole("button", { name: "Load more products" }));
+    await screen.findByRole("article", { name: "Product 21" });
+
+    expect(mockFetchProducts).toHaveBeenCalledWith(
+      expect.objectContaining({ query: "phone", skip: 20 }),
+    );
+  });
+
+  it("announces when a search has no results", () => {
+    renderList({ query: "zzz", initialCount: 0, total: 0 });
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "No products found for “zzz”.",
+    );
+    expect(screen.queryByRole("list")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 });
