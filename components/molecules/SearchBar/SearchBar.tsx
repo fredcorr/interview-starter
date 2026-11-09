@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, type FormEvent } from "react";
+import { useId, useRef, type SubmitEvent } from "react";
 import { Button } from "@/components/atoms/Button";
 import { Icon } from "@/components/atoms/Icon";
 import { Input } from "@/components/atoms/Input";
@@ -30,7 +30,7 @@ export const SearchBar = ({
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit?.(value);
   };
